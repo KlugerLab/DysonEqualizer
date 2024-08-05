@@ -1,0 +1,9 @@
+matplotlib>=3.6
+numpy>=1.25
+sphinx==8.0.2
+numpydoc
+#coverage
+intersphinx-registry
+pydata-sphinx-theme
+#jupyterlab
+#line_profiler
