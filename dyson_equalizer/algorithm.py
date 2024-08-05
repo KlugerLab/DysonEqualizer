@@ -159,10 +159,10 @@ def scale_matrix(
         The normalized matrix
     """
     m, n = Y.shape[-2:]
-    if x.shape != [m]:
-        raise ValueError(f"The row weights vector have the wrong shape {x.shape}")
-    if y.shape != [n]:
-        raise ValueError(f"The columns weights vector have the wrong shape {y.shape}")
+    if x.shape != (m, ):
+        raise ValueError(f"The row weights vector have the wrong shape {x.shape}, expected {(m,)}")
+    if y.shape != (n, ):
+        raise ValueError(f"The columns weights vector have the wrong shape {y.shape}, expected {(n,)}")
 
     return x[:, None] * Y * y
 
