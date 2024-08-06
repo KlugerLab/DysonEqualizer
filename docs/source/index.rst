@@ -1,32 +1,21 @@
-Dyson Equalizer documentation
-===================
+.. include:: ../../README.md
+   :parser: myst_parser.sphinx_
 
 
-This package is a Python implementation of the Dyson Equalizer.
-The method is described in detail in the article [The Dyson Equalizer: Adaptive Noise Stabilization for Low-Rank Signal Detection and Recovery
-](https://doi.org/10.48550/arXiv.2306.11263)
+Contents
+--------
 
-Install
--------
-The main version of the package can be installed as
-
-.. code:: bash
-
-    pip install dyson-equalizer
-
-
-The development version of the package can be installed as
-
-.. code:: bash
-
-    pip install git+https://github.com/Klugerlab/DysonEqualizer.git
-
-
-API
----
-
-The reference API for is available at :doc:`reference/modules` and :doc:`reference/dyson_equalizer`
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
-   :caption: Contents:
+
+   self
+   reference/dyson_equalizer
+
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+

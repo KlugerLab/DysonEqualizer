@@ -1,14 +1,8 @@
 """
-    The ``dyson_equalizer.algorithm`` module provides functions implementing the algorithms needed to compute the Dyson Equalizer [1]_
-    and related auxiliary functions.
+    The ``dyson_equalizer.algorithm`` module provides functions implementing the algorithms needed
+    to compute the Dyson Equalizer and related auxiliary functions.
 
     The functions may be used to build specialized implementation of the Dyson Equalizer.
-
-    References
-    ----------
-
-    .. [1] Landa B., Kluger Y., "The Dyson Equalizer: Adaptive Noise Stabilization for Low-Rank Signal
-       Detection and Recovery," arXiv, https://arxiv.org/abs/2306.11263
 
 """
 import numpy as np
@@ -157,6 +151,7 @@ def scale_matrix(
     -------
     Y_hat: (m, n) numpy.array
         The normalized matrix
+
     """
     m, n = Y.shape[-2:]
     if x.shape != (m, ):

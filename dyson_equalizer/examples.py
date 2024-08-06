@@ -2,10 +2,27 @@ import numpy as np
 
 
 def generate_X(
-        m=1000,
-        n=2000,
-        seed=123
+        m: int = 1000,
+        n: int = 2000,
+        seed: int = 123
 ) -> np.array:
+    """ Generates a signal matrix with 10 strong principal values and 10 weak principal values.
+
+    Parameters
+    ----------
+    m: int, optional
+        The number of rows (default=1000)
+    n: int, optional
+        The number of rows (default=2000)
+    seed: int, optional
+        The random seed (default=123)
+
+    Returns
+    -------
+    numpy.array
+        The data matrix
+
+    """
     np.random.seed(seed)
     assert m <= n
 
@@ -22,12 +39,35 @@ def generate_X(
     return X_20
 
 
-def generate_X_with_correlated_noise(
-        m=1000,
-        n=2000,
-        noise_dimensions=10,
-        seed=123,
+def generate_Y_with_correlated_noise(
+        m: int = 1000,
+        n: int = 2000,
+        noise_dimensions: int = 10,
+        seed: int = 123,
 ) -> np.array:
+    """ Generates a test matrix with 10 strong principal values and 10 weak principal values.
+
+    Parameters
+    ----------
+    m: int, optional
+        The number of rows (default=1000)
+    n: int, optional
+        The number of rows (default=2000)
+    noise_dimensions: int, optional
+        The number of noise dimensions (default=10)
+    seed: int, optional
+        The random seed (default=123)
+
+    Returns
+    -------
+    numpy.array
+        The data matrix
+
+    See Also
+    --------
+    generate_X
+
+    """
     np.random.seed(seed)
 
     X = generate_X(m=m, n=n)

@@ -1,0 +1,5 @@
+sphinx==8.0.2
+intersphinx-registry
+myst-parser
+numpydoc
+pydata-sphinx-theme
