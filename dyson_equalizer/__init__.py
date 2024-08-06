@@ -12,9 +12,10 @@
     added to create the data matrix ``Y``.
 
     Next, we compute the Dyson Equalizer and plot the eigenvalues distributions by
-        * Initializing the `DysonEqualizer` class with the data class Y and calling `compute()`
-        * Calling the `plot_mp_eigenvalues_and_densities` function. The option `show_only_significant=1` was specified
-          to limit the x-axis to the first non-noise eigenvalue, since the larges signal eigenvalues are large.
+
+    #. Initializing the `DysonEqualizer` class with the data class Y and calling `compute()`
+    #. Calling the `plot_mp_eigenvalues_and_densities` function. The option `show_only_significant=1` was specified
+       to limit the x-axis to the first non-noise eigenvalue, since the larges signal eigenvalues are large.
 
     .. plot::
         :context: close-figs
