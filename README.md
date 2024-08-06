@@ -4,12 +4,13 @@ This package is a Python implementation of the Dyson Equalizer.
 The method is described in detail in the article [The Dyson Equalizer: Adaptive Noise Stabilization for Low-Rank Signal Detection and Recovery
 ](https://doi.org/10.48550/arXiv.2306.11263)
 
+The documentation is available at [https://klugerlab.github.io/DysonEqualizer](https://klugerlab.github.io/DysonEqualizer).
+
 ## Installation ##
 The main version of the package can be installed as 
 ```
 pip install dyson-equalizer
 ```
-
 
 The development version of the package can be installed as 
 ```

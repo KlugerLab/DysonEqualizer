@@ -1,4 +1,5 @@
 matplotlib>=3.6
 numpy>=1.25
+pytest
 #jupyterlab
 #line_profiler
