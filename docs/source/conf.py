@@ -1,6 +1,8 @@
 import numpy
 import os
 import sys
+from importlib.metadata import version
+
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../..'))
 
@@ -15,7 +17,11 @@ sys.path.insert(0, os.path.abspath('../..'))
 project = 'Dyson Equalizer'
 copyright = '2024, Boris Landa, Francesco Strino, Yuval Kluger'
 author = 'Boris Landa, Francesco Strino, Yuval Kluger'
-release = '0.1.3'
+
+# scm version (https://pypi.org/project/setuptools-scm/7.0.5/)
+release_scm = version('dyson-equalizer')
+release = '.'.join(release_scm.split('.')[:3])
+version = release
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -44,12 +50,26 @@ html_static_path = ['_static']
 
 html_context = {
     "default_mode": "light",
+    "github_user": "KlugerLab",
+    "github_repo": "DysonEqualizer",
+    "github_version": "main",
+    "doc_path": "docs",
 }
 
 html_sidebars = {
-  "examples": []
+    "examples": []
 }
 
+html_theme_options = {
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/KlugerLab/DysonEqualizer",
+            "icon": "fa-brands fa-square-github",
+            "type": "fontawesome",
+        },
+    ],
+}
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),

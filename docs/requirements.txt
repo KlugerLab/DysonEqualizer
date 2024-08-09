@@ -5,3 +5,4 @@ intersphinx-registry
 myst-parser
 numpydoc
 pydata-sphinx-theme
+flit_scm
