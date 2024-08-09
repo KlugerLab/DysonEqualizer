@@ -20,28 +20,28 @@ class DysonEqualizer:
 
     Attributes
     ----------
-    Y: (m, n) numpy.array
+    Y: (m, n) numpy.ndarray
         The original data matrix
 
-    x_hat: (m) numpy.array
+    x_hat: (m) numpy.ndarray
         The normalizing factors for the rows
 
-    y_hat: (n) numpy.array
+    y_hat: (n) numpy.ndarray
         The normalizing factors for the columns
 
-    Y_hat: (m, n) numpy.array
+    Y_hat: (m, n) numpy.ndarray
         The normalized data matrix so that the variance of the error is 1
 
-    X_bar: (m, n) numpy.array
+    X_bar: (m, n) numpy.ndarray
         The estimated signal matrix. It has rank `r_hat`
 
     r_hat: int
         The estimated rank of the signal matrix
 
-    S: (m) numpy.array
+    S: (m) numpy.ndarray
         The principal values of the data matrix `Y`
 
-    S_hat: (m) numpy.array
+    S_hat: (m) numpy.ndarray
         The principal values of the normalized data matrix `Y_hat`
 
     See Also
@@ -52,30 +52,30 @@ class DysonEqualizer:
     """
 
     #:  The original data matrix
-    Y: np.array
+    Y: np.ndarray
 
     #:  The normalizing factors for the rows
-    x_hat: np.array = None
+    x_hat: np.ndarray = None
 
     #:  The normalizing factors for the columns
-    y_hat: np.array = None
+    y_hat: np.ndarray = None
 
     #:  The normalized data matrix so that the variance of the error is 1
-    Y_hat: np.array = None
+    Y_hat: np.ndarray = None
 
     #:  The estimated signal matrix. It has rank `r_hat`
-    X_bar: np.array = None
+    X_bar: np.ndarray = None
 
     #:  The estimated rank of the signal matrix
     r_hat: int = None
 
     #:  The principal values of the data matrix `Y`
-    S: np.array = None
+    S: np.ndarray = None
 
     #:  The principal values of the data matrix `Y_hat`
-    S_hat: np.array = None
+    S_hat: np.ndarray = None
 
-    def __init__(self, Y: np.array):
+    def __init__(self, Y: np.ndarray):
         """ Creates a Dyson Equalizer object.
 
         Parameters
@@ -87,14 +87,14 @@ class DysonEqualizer:
 
     def compute(
             self,
-            use_X_bar: bool = False
+            use_Y_hat: bool = False
     ) -> Self:
         """ Computes the Dyson Equalizer and stores the results.
 
         Parameters
         ----------
-        use_X_bar: bool, optional
-            if ``True`` uses `X_bar` instead of the original matrix as input.
+        use_Y_hat: bool, optional
+            if ``True`` uses `Y_hat` instead of the original matrix as input.
             This option may be used iteratively to improve the low rank approximation in some cases
 
         Returns
@@ -102,7 +102,7 @@ class DysonEqualizer:
         self : DysonEqualizer
             A reference to this instance
         """
-        Y = self.X_bar if use_X_bar else self.Y
+        Y = self.Y_hat if use_Y_hat else self.Y
         svd = np.linalg.svd(Y, full_matrices=False)
         x_hat, y_hat = compute_scaling_factors(svd)
         Y_hat = scale_matrix(self.Y, 1 / np.sqrt(x_hat), 1 / np.sqrt(y_hat))

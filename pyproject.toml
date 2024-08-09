@@ -4,13 +4,13 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "dyson-equalizer"
-version = "0.1.1"
+version = "0.1.2"
 description = "Computes the Dyson Equalizer and related low rank approximation of the input data"
 license = {file = "LICENSE"}
 readme = "README.md"
 
 authors = [
-    {name = "Francesco Strino", email = "francesco.strino@pcmgf.com"},
+    {name = "Boris Landa", email = "boris.landa@yale.edu"},
     {name = "Francesco Strino", email = "francesco.strino@pcmgf.com"},
     {name = "Yuval Kluger", email = "yuval.kluger@yale.edu"},
 ]

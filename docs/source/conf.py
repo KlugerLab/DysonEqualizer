@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('..'))
 project = 'Dyson Equalizer'
 copyright = '2024, Boris Landa, Francesco Strino, Yuval Kluger'
 author = 'Boris Landa, Francesco Strino, Yuval Kluger'
-release = '0.1.1'
+release = '0.1.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -49,6 +49,11 @@ html_static_path = ['_static']
 html_context = {
     "default_mode": "light",
 }
+
+html_sidebars = {
+  "examples": []
+}
+
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),

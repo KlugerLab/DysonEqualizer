@@ -1,5 +1,6 @@
-dyson\_equalizer package
-========================
+===============
+API and modules
+===============
 
 .. automodule:: dyson_equalizer
    :members:

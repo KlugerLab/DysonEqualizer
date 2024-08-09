@@ -7,7 +7,7 @@ import numpy as np
 
 def validate_matrix(
         Y
-) -> np.array:
+) -> np.ndarray:
     """Compute the scaling factors for the Dyson equalizer
 
     Parameters
@@ -17,7 +17,7 @@ def validate_matrix(
 
     Returns
     -------
-    Y: (m, n) numpy.array
+    Y: (m, n) numpy.ndarray
         The input matrix as numpy array
 
     Raises

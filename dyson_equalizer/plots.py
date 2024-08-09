@@ -8,7 +8,7 @@ from dyson_equalizer.algorithm import marchenko_pastur
 
 
 def plot_mp_eigenvalues(
-        eigs: np.array, gamma: float,
+        eigs: np.ndarray, gamma: float,
         eigenvalues_to_show: int = 100,
         log_y: bool = True,
         matrix_label: str = 'X',
@@ -73,7 +73,7 @@ def plot_mp_eigenvalues(
 
 
 def plot_mp_density(
-        eigs: np.array,
+        eigs: np.ndarray,
         gamma: float,
         show_only_significant: int = None,
         matrix_label: str = 'X',

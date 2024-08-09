@@ -12,7 +12,7 @@ from dyson_equalizer.validation import validate_svd
 
 def compute_scaling_factors(
         svd
-) -> tuple[np.array, np.array]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Compute the scaling factors for the Dyson equalizer
 
     Parameters
@@ -86,7 +86,7 @@ def compute_scaling_factors(
 
 def compute_low_rank_approximation_mp(
         svd
-) -> tuple[np.array, int]:
+) -> tuple[np.ndarray, int]:
     """Computes the low rank approximation by keeping all eigeinvalues above the maximum
     of the Marchenko-Pastur distribution.
     Details, derivation and convergence analysis are provided in [1]_, in particular Algorithms 2 and 3.
@@ -130,26 +130,26 @@ def compute_low_rank_approximation_mp(
 
 
 def scale_matrix(
-        Y: np.array,
-        x: np.array,
-        y: np.array
-) -> np.array:
+        Y: np.ndarray,
+        x: np.ndarray,
+        y: np.ndarray
+) -> np.ndarray:
     """Scales a matrix by the given normalization factors for rows and columns
 
     .. math:: \\hat{Y} = D\\{x\\} Y D\\{y\\}
 
     Parameters
     ----------
-    Y: (m, n) numpy.array
+    Y: (m, n) numpy.ndarray
         a matrix
-    x: (m) numpy.array
+    x: (m) numpy.ndarray
         the row weights
-    x: (n) numpy.array
+    x: (n) numpy.ndarray
         the column weights
 
     Returns
     -------
-    Y_hat: (m, n) numpy.array
+    Y_hat: (m, n) numpy.ndarray
         The normalized matrix
 
     """
@@ -163,10 +163,10 @@ def scale_matrix(
 
 
 def marchenko_pastur(
-        x: np.array,
+        x: np.ndarray,
         gamma: float,
         sigma: float = 1
-) -> np.array:
+) -> np.ndarray:
     """Computes the density of the Marchenko-Pastur distribution for the given values
 
     Parameters
@@ -180,7 +180,7 @@ def marchenko_pastur(
 
     Returns
     -------
-    y: (n) numpy.array
+    y: (n) numpy.ndarray
         The values of the Marchenko-Pastur distribution
 
     Notes

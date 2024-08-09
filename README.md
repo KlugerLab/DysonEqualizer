@@ -17,7 +17,7 @@ The development version of the package can be installed as
 pip install git+https://github.com/Klugerlab/DysonEqualizer.git
 ```
 
-## Example ##
+## Getting started ##
 
 To import the package and apply the Dyson Equalizer to a test matrix
 
@@ -39,3 +39,6 @@ The `DysonEqualizer` result class will contain the following attributes
 - `r_hat`:  The estimated rank of the signal matrix
 - `S`: The principal values of the data matrix `Y`
 - `S_hat`:  The principal values of the data matrix `Y_hat`
+
+Detailed examples are available on the [Examples](https://klugerlab.github.io/DysonEqualizer/examples.htm) 
+page.

@@ -5,7 +5,7 @@ def generate_X(
         m: int = 1000,
         n: int = 2000,
         seed: int = 123
-) -> np.array:
+) -> np.ndarray:
     """ Generates a signal matrix with 10 strong principal values and 10 weak principal values.
 
     Parameters
@@ -19,7 +19,7 @@ def generate_X(
 
     Returns
     -------
-    numpy.array
+    numpy.ndarray
         The data matrix
 
     """
@@ -39,12 +39,55 @@ def generate_X(
     return X_20
 
 
+def generate_Y_almost_homoskedastic(
+        m: int = 1000,
+        n: int = 2000,
+
+        seed: int = 123,
+) -> np.ndarray:
+    """ Generates a test matrix with 10 strong principal values and 10 weak principal values.
+
+    The noise is homoskedastic except for the last 5 rows and columns where it is abnormally strong
+
+    Parameters
+    ----------
+    m: int, optional
+        The number of rows (default=1000)
+    n: int, optional
+        The number of rows (default=2000)
+    seed: int, optional
+        The random seed (default=123)
+
+    Returns
+    -------
+    numpy.ndarray
+        The data matrix
+
+    See Also
+    --------
+    generate_X
+
+    """
+    np.random.seed(seed)
+
+    X = generate_X(m=m, n=n)
+
+    x = np.ones(m)
+    y = np.ones(n)
+    x[-5:] = 10
+    y[-5:] = 100
+    S = x[:, None] * y
+    E = np.random.normal(scale=np.sqrt(S))
+
+    return X + E
+
+
 def generate_Y_with_correlated_noise(
         m: int = 1000,
         n: int = 2000,
         noise_dimensions: int = 10,
         seed: int = 123,
-) -> np.array:
+) -> np.ndarray:
     """ Generates a test matrix with 10 strong principal values and 10 weak principal values.
 
     Parameters
@@ -60,7 +103,7 @@ def generate_Y_with_correlated_noise(
 
     Returns
     -------
-    numpy.array
+    numpy.ndarray
         The data matrix
 
     See Also
