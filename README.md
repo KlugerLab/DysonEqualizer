@@ -40,5 +40,5 @@ The `DysonEqualizer` result class will contain the following attributes
 - `S`: The principal values of the data matrix `Y`
 - `S_hat`:  The principal values of the data matrix `Y_hat`
 
-Detailed examples are available on the [Examples](https://klugerlab.github.io/DysonEqualizer/examples.htm) 
+Detailed examples are available on the [Examples](https://klugerlab.github.io/DysonEqualizer/examples.html) 
 page.
