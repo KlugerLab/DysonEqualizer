@@ -2,6 +2,7 @@ import numpy
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -28,12 +29,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.doctest',
     'sphinx.ext.autosummary',
-    # 'sphinx.ext.graphviz',
-    # 'sphinx.ext.ifconfig',
     'matplotlib.sphinxext.plot_directive',
-    # 'IPython.sphinxext.ipython_console_highlighting',
-    # 'IPython.sphinxext.ipython_directive',
-    # 'sphinx.ext.imgmath',
 ]
 
 templates_path = ['_templates']
