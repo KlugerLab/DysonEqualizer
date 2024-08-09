@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 project = 'Dyson Equalizer'
 copyright = '2024, Boris Landa, Francesco Strino, Yuval Kluger'
 author = 'Boris Landa, Francesco Strino, Yuval Kluger'
-release = '0.1.2'
+release = '0.1.3'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

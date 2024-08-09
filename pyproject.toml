@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "dyson-equalizer"
-version = "0.1.2"
+version = "0.1.3"
 description = "Computes the Dyson Equalizer and related low rank approximation of the input data"
 license = {file = "LICENSE"}
 readme = "README.md"
