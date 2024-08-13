@@ -22,10 +22,10 @@ pip install git+https://github.com/Klugerlab/DysonEqualizer.git
 To import the package and apply the Dyson Equalizer to a test matrix
 
 ```python
-from dyson_equalizer.examples import generate_Y_with_correlated_noise
+from dyson_equalizer.examples import generate_Y_with_heteroskedastic_noise
 from dyson_equalizer.dyson_equalizer import DysonEqualizer
 
-Y = generate_Y_with_correlated_noise()
+Y = generate_Y_with_heteroskedastic_noise()
 de = DysonEqualizer(Y).compute()
 
 ```

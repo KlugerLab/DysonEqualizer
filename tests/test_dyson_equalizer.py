@@ -3,26 +3,26 @@ import unittest
 import numpy as np
 
 from dyson_equalizer.dyson_equalizer import DysonEqualizer
-from dyson_equalizer.examples import generate_Y_with_correlated_noise, generate_Y_almost_homoskedastic
+from dyson_equalizer.examples import generate_Y_with_heteroskedastic_noise, generate_Y_with_almost_homoskedastic_noise
 
 
 class DysonEqualizerTestCase(unittest.TestCase):
     def test_fig_1(self):
-        Y = generate_Y_almost_homoskedastic()
+        Y = generate_Y_with_almost_homoskedastic_noise()
         de = DysonEqualizer(Y)
         de.compute()
 
         self.assertEqual(20, de.r_hat)
 
     def test_fig_2(self):
-        Y = generate_Y_with_correlated_noise()
+        Y = generate_Y_with_heteroskedastic_noise()
         de = DysonEqualizer(Y)
         de.compute()
 
         self.assertEqual(20, de.r_hat)
 
     def test_transpose(self):
-        Y = generate_Y_with_correlated_noise()
+        Y = generate_Y_with_heteroskedastic_noise()
 
         de = DysonEqualizer(Y)
         de.compute()

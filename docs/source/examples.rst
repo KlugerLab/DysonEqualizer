@@ -23,9 +23,9 @@ added to create the data matrix ``Y = X + E``. The noise ``E`` was homoskedastic
     import matplotlib.pyplot as plt
     import numpy as np
     from dyson_equalizer.dyson_equalizer import DysonEqualizer
-    from dyson_equalizer.examples import generate_Y_almost_homoskedastic
+    from dyson_equalizer.examples import generate_Y_with_almost_homoskedastic_noise
 
-    Y = generate_Y_almost_homoskedastic()
+    Y = generate_Y_with_almost_homoskedastic_noise()
     de = DysonEqualizer(Y).compute()
     de.plot_mp_eigenvalues_and_densities(show_only_significant=1)
 
@@ -55,9 +55,9 @@ Next, we compute the Dyson Equalizer and plot the eigenvalues distributions by
     import matplotlib.pyplot as plt
     import numpy as np
     from dyson_equalizer.dyson_equalizer import DysonEqualizer
-    from dyson_equalizer.examples import generate_Y_with_correlated_noise
+    from dyson_equalizer.examples import generate_Y_with_heteroskedastic_noise
 
-    Y = generate_Y_with_correlated_noise()
+    Y = generate_Y_with_heteroskedastic_noise()
     de = DysonEqualizer(Y).compute()
     de.plot_mp_eigenvalues_and_densities(show_only_significant=1)
 

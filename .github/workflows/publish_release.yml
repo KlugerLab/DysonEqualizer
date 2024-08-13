@@ -9,7 +9,7 @@ name: Publish Python 🐍 distribution 📦 to PyPI and Github
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
   workflow_dispatch:
 
 jobs:

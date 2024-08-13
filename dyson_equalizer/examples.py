@@ -39,7 +39,7 @@ def generate_X(
     return X_20
 
 
-def generate_Y_almost_homoskedastic(
+def generate_Y_with_almost_homoskedastic_noise(
         m: int = 1000,
         n: int = 2000,
 
@@ -82,7 +82,7 @@ def generate_Y_almost_homoskedastic(
     return X + E
 
 
-def generate_Y_with_correlated_noise(
+def generate_Y_with_heteroskedastic_noise(
         m: int = 1000,
         n: int = 2000,
         noise_dimensions: int = 10,
