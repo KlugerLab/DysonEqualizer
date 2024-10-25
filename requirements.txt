@@ -1,5 +1,6 @@
 matplotlib>=3.6
 numpy>=1.25
+scipy>=1.13
 pytest
 #jupyterlab
 #line_profiler
