@@ -174,7 +174,7 @@ def marchenko_pastur(
     x: (n) numpy.array or float
         a vector or a value for the xs to be computed
     gamma: float
-        the ratio between the number of rows and the number of columns
+        the ratio between the number of rows and the number of columns (between 0 and 1)
     sigma: float, optional
         the variance of the entries of the random matrix (defaults to 1)
 
@@ -197,13 +197,55 @@ def marchenko_pastur(
       * :math:`\\beta_\\pm = \\sigma^2(1\\pm\\sqrt{\\gamma})^2`
 
     """
+    if gamma < 0 or gamma > 1:
+        raise ValueError(f"The gamma must be between 0 and 1, got {gamma}")
+
     x = np.asarray(x)
     s2 = sigma ** 2
 
-    beta_m, beta_p = s2 * ((1 - gamma ** 0.5) ** 2, (1 + gamma ** 0.5) ** 2) # noqa
+    beta_m, beta_p = np.array([(1 - gamma ** 0.5) ** 2, (1 + gamma ** 0.5) ** 2]) * sigma**2
 
     r = np.zeros_like(x)
     i = (x > beta_m) & (x < beta_p)
     xi = x[i]
     r[i] = 1 / (2 * np.pi * s2) * np.sqrt((beta_p - xi) * (xi - beta_m)) / (gamma * xi)
+    return r
+
+
+def marchenko_pastur_cdf(
+        x,
+        gamma: float,
+        sigma: float = 1,
+):
+    """Computes the cumulative density function of the Marchenko-Pastur distribution for the given values
+
+    Parameters
+    ----------
+    x: (n) numpy.array or float
+        a vector or a value for the xs to be computed
+    gamma: float
+        the ratio between the number of rows and the number of columns (between 0 and 1)
+    sigma: float, optional
+        the variance of the entries of the random matrix (defaults to 1)
+
+    Returns
+    -------
+    y: (n) numpy.ndarray
+        The values of the cdf of the Marchenko-Pastur distribution
+
+    """
+    if gamma < 0 or gamma > 1:
+        raise ValueError(f"The gamma must be between 0 and 1, got {gamma}")
+
+    a, b = np.array([(1 - gamma ** 0.5) ** 2, (1 + gamma ** 0.5) ** 2]) * sigma ** 2
+
+    r = np.zeros_like(x)
+    r[x >= b] = 1
+    i = (x > a) & (x < b)
+    xi = x[i]
+
+    r[i] = (np.sqrt((xi - a) * (b - xi)) + (a + b) / 2 * np.asin((2 * xi - a - b) / (b - a)) -
+            (np.sqrt(a * b)) * np.asin(((a + b) * xi - 2 * a * b) / (xi * (b - a)))) / (
+                       2 * np.pi * gamma * sigma ** 2) + .5
+
     return r

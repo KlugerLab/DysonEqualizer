@@ -3,8 +3,9 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.stats import ks_1samp
 
-from dyson_equalizer.algorithm import marchenko_pastur
+from dyson_equalizer.algorithm import marchenko_pastur, marchenko_pastur_cdf
 
 
 def plot_mp_eigenvalues(
@@ -72,11 +73,17 @@ def plot_mp_eigenvalues(
     ax.legend()
 
 
+from matplotlib import pyplot as plt
+import numpy as np
+from typing import Sequence
+
+
 def plot_mp_density(
         eigs: np.ndarray,
         gamma: float,
         show_only_significant: int = None,
         matrix_label: str = 'X',
+        bins: int | str | Sequence = 'sqrt',
         ax: plt.Axes | None = None,
 ) -> None:
     """Plots the density of eigenvalues of the covariance matrix and compares to the Marchenko-Pastur distribution
@@ -95,6 +102,8 @@ def plot_mp_density(
         This option is useful is some of the signal eigenvalues are much bigger than the noise.
     matrix_label: str, optional
         The name of the matrix that will be used as label (defaults to ``X``)
+    bins: int or sequence or str, default: 'sqrt'
+        The bins parameter used to build the histogram.
     ax: plt.Axes, optional
         A matplotlib Axes object. If none is provided, a new figure is created.
 
@@ -102,7 +111,7 @@ def plot_mp_density(
     --------
 
     dyson_equalizer.algorithm.marchenko_pastur
-
+    matplotlib.pyplot.Axes.hist
 
     Examples
     --------
@@ -129,6 +138,8 @@ def plot_mp_density(
     if ax is None:
         _, ax = plt.subplots()
 
+    ksr = ks_1samp(eigs, cdf=marchenko_pastur_cdf, args=[gamma])
+
     eigs = np.asarray(eigs)
     beta_p = (1 + gamma ** 0.5) ** 2
     rank = np.sum(eigs > beta_p)
@@ -136,9 +147,12 @@ def plot_mp_density(
     if show_only_significant is not None:
         eigs = eigs[rank - show_only_significant:]
 
-    ax.hist(eigs, bins='auto', density=True, label=f'Eigenvalues of {matrix_label}')
+    ax.hist(eigs, bins=bins, density=True, label=f'Eigenvalues of {matrix_label}')
     x = np.linspace(start=0, stop=eigs[0] * 1.05, num=1000)
     mp = marchenko_pastur(x, gamma)
     ax.plot(x, mp, color='red', label='MP density')
-    ax.axvline(beta_p, linestyle='--',  color='green', label='MP upper edge β₊')
-    ax.legend()
+    ax.axvline(beta_p, linestyle='--', color='green', label='MP upper edge β₊')
+
+    ax.text(0.60, 0.94, f'KS p-val = {ksr.pvalue:.5f}', transform=ax.transAxes)
+
+    ax.legend(bbox_to_anchor=(0.95, 0.90), loc='upper right', borderaxespad=0.)

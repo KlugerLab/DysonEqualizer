@@ -1,15 +1,10 @@
 #
-# Creates a new release when a tag is pushed from git (do not create releases from github!).
-# - trigger only when a tag pushed, use the format 'v1.2.3'. Do not create the tag from Github releases
-# - creates a GitHub release
-# - uploads the new version on PyPI https://pypi.org/p/dyson-equalizer
+# Create a new GitHub release (do not run if one already exists!).
+#
 # Adapted from https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
-name: Publish Python 🐍 distribution 📦 to PyPI and Github
+name: Publish Python distribution to Github
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -37,34 +32,10 @@ jobs:
         name: python-package-distributions
         path: dist/
 
-  publish-to-pypi:
-    name: >-
-      Publish Python 🐍 distribution 📦 to PyPI
-    needs:
-    - build
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/dyson-equalizer
-    permissions:
-      id-token: write  # IMPORTANT: mandatory for trusted publishing
-
-    steps:
-    - name: Download all the dists
-      uses: actions/download-artifact@v3
-      with:
-        name: python-package-distributions
-        path: dist/
-    - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-
   github-release:
-    if: github.event_name != 'release'
     name: >-
-      Sign the Python 🐍 distribution 📦 with Sigstore
+      Sign the Python distribution with Sigstore
       and upload them to GitHub Release
-    needs:
-    - publish-to-pypi
     runs-on: ubuntu-latest
 
     permissions:
