@@ -11,7 +11,8 @@ from dyson_equalizer.validation import validate_svd
 
 
 def compute_scaling_factors(
-        svd
+        svd,
+        normalize_factors: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Compute the scaling factors for the Dyson equalizer
 
@@ -19,6 +20,9 @@ def compute_scaling_factors(
     ----------
     svd:
         The svd of the data matrix, computed e.g. using ``numpy.linalg.svd(Y, full_matrices=False)``
+    normalize_factors : bool, optional
+        if ``True``, normalize the factors so that the mean of x and y are close to 1. This option is
+        useful when iteration
 
     Returns
     -------
@@ -80,6 +84,13 @@ def compute_scaling_factors(
 
     x_hat = 1 / np.sqrt(m - eta * np.linalg.norm(g1, 1)) * (1 / g1 - eta)
     y_hat = 1 / np.sqrt(n - eta * np.linalg.norm(g2, 1)) * (1 / g2 - eta)
+
+    if normalize_factors:
+        kx = x_hat.mean()
+        ky = y_hat.mean()
+        kr = np.sqrt(kx / ky)
+        x_hat /= kr
+        y_hat *= kr
 
     return x_hat, y_hat
 
