@@ -189,6 +189,7 @@ class DysonEqualizer:
             log_eigenvalues: bool = True,
             eigenvalues_to_show: int = 100,
             show_only_significant: int = 2,
+            show_only_significant_right_margin: float = 0.3,
             figsize: tuple[int, int] = (12, 8),
     ) -> None:
         """ Plots the eigenvalues of ¹⁄ₙYYᵀ  of ¹⁄ₙŶŶᵀ and their densities.
@@ -201,9 +202,14 @@ class DysonEqualizer:
             The number of eigenvalues to show in the eigenvalue plots (defaults to 100)
         log_eigenvalues: bool, optional
             Whether the y-axis should be logarithmic  in the eigenvalue plots (defaults to True)
-        show_only_significant: int = None,
-            Set this value to show only a small number of significant eigenvalues in the density plots
+        show_only_significant: int, optional
+            Set this value to show only a small number of significant eigenvalues (defaults to None)
             This option is useful is some of the signal eigenvalues are much bigger than the noise.
+            Set to zero to show only significant eigenvalues within the margin indicated by
+            `show_only_significant_right_margin`
+        show_only_significant_right_margin: float, optional
+            Specifies the size of the right margin (defaults to 0.3) from the largest eigenvalue
+            selected by the show_only_significant option
         figsize: int, int
             The figure size
 
@@ -219,9 +225,10 @@ class DysonEqualizer:
 
         self.plot_mp_eigenvalues_Y(ax=ax_11, log_y=log_eigenvalues, eigenvalues_to_show=eigenvalues_to_show)
         self.plot_mp_eigenvalues_Y_hat(ax=ax_12, log_y=log_eigenvalues, eigenvalues_to_show=eigenvalues_to_show)
-        self.plot_mp_density_Y(ax=ax_21, show_only_significant=show_only_significant)
-        self.plot_mp_density_Y_hat(ax=ax_22, show_only_significant=show_only_significant)
-
+        self.plot_mp_density_Y(ax=ax_21, show_only_significant=show_only_significant,
+                               show_only_significant_right_margin=show_only_significant_right_margin)
+        self.plot_mp_density_Y_hat(ax=ax_22, show_only_significant=show_only_significant,
+                                   show_only_significant_right_margin=show_only_significant_right_margin)
 
     def plot_mp_eigenvalues_Y(
             self,
@@ -293,6 +300,7 @@ class DysonEqualizer:
     def plot_mp_density_Y(
             self,
             show_only_significant: int = None,
+            show_only_significant_right_margin: float = 0.3,
             ax: plt.Axes | None = None,
     ) -> None:
         """Plots the density of eigenvalues of ¹⁄ₙYYᵀ and compares to the Marchenko-Pastur distribution
@@ -305,6 +313,11 @@ class DysonEqualizer:
         show_only_significant: int, optional
             Set this value to show only a small number of significant eigenvalues (defaults to None)
             This option is useful is some of the signal eigenvalues are much bigger than the noise.
+            Set to zero to show only significant eigenvalues within the margin indicated by
+            `show_only_significant_right_margin`
+        show_only_significant_right_margin: float, optional
+            Specifies the size of the right margin (defaults to 0.3) from the largest eigenvalue
+            selected by the show_only_significant option
         ax: plt.Axes, optional
             A matplotlib Axes object. If none is provided, a new figure is created.
 
@@ -318,6 +331,7 @@ class DysonEqualizer:
         plot_mp_density(
             eigs, gamma=m/n,
             show_only_significant=show_only_significant,
+            show_only_significant_right_margin=show_only_significant_right_margin,
             matrix_label='¹⁄ₙYYᵀ',
             ax=ax,
         )
@@ -325,6 +339,7 @@ class DysonEqualizer:
     def plot_mp_density_Y_hat(
             self,
             show_only_significant: int = None,
+            show_only_significant_right_margin: float = 0.3,
             ax: plt.Axes | None = None,
     ) -> None:
         """Plots the density of eigenvalues of ¹⁄ₙŶŶᵀ and compares to the Marchenko-Pastur distribution
@@ -337,6 +352,14 @@ class DysonEqualizer:
         show_only_significant: int, optional
             Set this value to show only a small number of significant eigenvalues (defaults to None)
             This option is useful is some of the signal eigenvalues are much bigger than the noise.
+        show_only_significant: int, optional
+            Set this value to show only a small number of significant eigenvalues (defaults to None)
+            This option is useful is some of the signal eigenvalues are much bigger than the noise.
+            Set to zero to show only significant eigenvalues within the margin indicated by
+            `show_only_significant_right_margin`
+        show_only_significant_right_margin: float, optional
+            Specifies the size of the right margin (defaults to 0.3) from the largest eigenvalue
+            selected by the show_only_significant option
         ax: plt.Axes, optional
             A matplotlib Axes object. If none is provided, a new figure is created.
 
@@ -350,6 +373,7 @@ class DysonEqualizer:
         plot_mp_density(
             eigs, gamma=m/n,
             show_only_significant=show_only_significant,
+            show_only_significant_right_margin=show_only_significant_right_margin,
             matrix_label='¹⁄ₙŶŶᵀ',
             ax=ax,
         )
