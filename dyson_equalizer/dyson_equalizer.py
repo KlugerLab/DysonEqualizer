@@ -3,14 +3,24 @@
     to easily compute the Dyson Equalizer.
 
 """
+from dataclasses import dataclass
 from typing import Self
 
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.stats import ks_1samp
 
-from dyson_equalizer.algorithm import compute_scaling_factors, compute_low_rank_approximation_mp, scale_matrix
+from dyson_equalizer.algorithm import compute_scaling_factors, compute_low_rank_approximation_mp, scale_matrix, \
+    marchenko_pastur_cdf
 from dyson_equalizer.plots import plot_mp_eigenvalues, plot_mp_density
 from dyson_equalizer.validation import validate_matrix
+
+@dataclass
+class IterationStatistics:
+    delta_Y_hat: float = np.nan
+    ks_pvalue: float = np.nan
+    x_hat_mean: float = np.nan
+    y_hat_mean: float = np.nan
 
 
 class DysonEqualizer:
@@ -75,6 +85,9 @@ class DysonEqualizer:
     #:  The principal values of the data matrix `Y_hat`
     S_hat: np.ndarray = None
 
+    #:  Statistics on each iteration
+    iteration_statistics: list[IterationStatistics] = []
+
     def __init__(self, Y: np.ndarray):
         """ Creates a Dyson Equalizer object.
 
@@ -102,10 +115,19 @@ class DysonEqualizer:
         self : DysonEqualizer
             A reference to this instance
         """
+        stats = IterationStatistics()
         Y = self.Y_hat if use_Y_hat else self.Y
         svd = np.linalg.svd(Y, full_matrices=False)
-        x_hat, y_hat = compute_scaling_factors(svd)
+        x_hat, y_hat = compute_scaling_factors(svd, normalize_factors=use_Y_hat)
+        if use_Y_hat:
+            x_hat = self.x_hat * x_hat
+            y_hat = self.y_hat * y_hat
+        stats.x_hat_mean = x_hat.mean()
+        stats.y_hat_mean = y_hat.mean()
+
         Y_hat = scale_matrix(self.Y, 1 / np.sqrt(x_hat), 1 / np.sqrt(y_hat))
+        if use_Y_hat:
+            stats.delta_Y_hat = np.abs(self.Y_hat - Y_hat).mean()
 
         svd_hat = np.linalg.svd(Y_hat, full_matrices=False)
         Y_tr, r_hat = compute_low_rank_approximation_mp(svd_hat)
@@ -117,16 +139,57 @@ class DysonEqualizer:
         self.Y_hat = Y_hat
         self.X_bar = X_bar
         self.r_hat = r_hat
-        self.S = svd.S
+        if not use_Y_hat:
+            self.S = svd.S
         self.S_hat = svd_hat.S
 
+        stats.ks_pvalue = self.ks_pvalue_Y_hat()
+        self.iteration_statistics.append(stats)
         return self
+
+    def compute_iteratively(
+            self,
+            Y_hat_delta_threshold: float = 1e-6,
+            ks_pvalue_unchanged: bool = True,
+            max_iterations: int = 100
+    ) -> Self:
+        """ Computes the Dyson Equalizer iteratively and stores the results.
+
+        Parameters
+        ----------
+        Y_hat_delta_threshold: float, optional
+            Terminates if the average  difference between Y_hat entries is below this value
+
+        ks_pvalue_unchanged: bool, optional
+            Terminates if the KS-pvalue has not changed in the last iteration
+
+        max_iterations: int, optional
+            The maximum number of iterations
+
+        Returns
+        -------
+        self : DysonEqualizer
+            A reference to this instance
+        """
+        self.iteration_statistics = []
+        self.compute(use_Y_hat=False)
+
+        for i in range(max_iterations):
+            self.compute(use_Y_hat=True)
+            if self.iteration_statistics[-1].delta_Y_hat < Y_hat_delta_threshold:
+                break
+            if ks_pvalue_unchanged:
+                if self.iteration_statistics[-1].ks_pvalue == self.iteration_statistics[-2].ks_pvalue:
+                    break
+        return self
+
 
     def plot_mp_eigenvalues_and_densities(
             self,
             log_eigenvalues: bool = True,
             eigenvalues_to_show: int = 100,
             show_only_significant: int = 2,
+            show_only_significant_right_margin: float = 0.3,
             figsize: tuple[int, int] = (12, 8),
     ) -> None:
         """ Plots the eigenvalues of ¹⁄ₙYYᵀ  of ¹⁄ₙŶŶᵀ and their densities.
@@ -139,9 +202,14 @@ class DysonEqualizer:
             The number of eigenvalues to show in the eigenvalue plots (defaults to 100)
         log_eigenvalues: bool, optional
             Whether the y-axis should be logarithmic  in the eigenvalue plots (defaults to True)
-        show_only_significant: int = None,
-            Set this value to show only a small number of significant eigenvalues in the density plots
+        show_only_significant: int, optional
+            Set this value to show only a small number of significant eigenvalues (defaults to None)
             This option is useful is some of the signal eigenvalues are much bigger than the noise.
+            Set to zero to show only significant eigenvalues within the margin indicated by
+            `show_only_significant_right_margin`
+        show_only_significant_right_margin: float, optional
+            Specifies the size of the right margin (defaults to 0.3) from the largest eigenvalue
+            selected by the show_only_significant option
         figsize: int, int
             The figure size
 
@@ -157,9 +225,10 @@ class DysonEqualizer:
 
         self.plot_mp_eigenvalues_Y(ax=ax_11, log_y=log_eigenvalues, eigenvalues_to_show=eigenvalues_to_show)
         self.plot_mp_eigenvalues_Y_hat(ax=ax_12, log_y=log_eigenvalues, eigenvalues_to_show=eigenvalues_to_show)
-        self.plot_mp_density_Y(ax=ax_21, show_only_significant=show_only_significant)
-        self.plot_mp_density_Y_hat(ax=ax_22, show_only_significant=show_only_significant)
-
+        self.plot_mp_density_Y(ax=ax_21, show_only_significant=show_only_significant,
+                               show_only_significant_right_margin=show_only_significant_right_margin)
+        self.plot_mp_density_Y_hat(ax=ax_22, show_only_significant=show_only_significant,
+                                   show_only_significant_right_margin=show_only_significant_right_margin)
 
     def plot_mp_eigenvalues_Y(
             self,
@@ -231,6 +300,7 @@ class DysonEqualizer:
     def plot_mp_density_Y(
             self,
             show_only_significant: int = None,
+            show_only_significant_right_margin: float = 0.3,
             ax: plt.Axes | None = None,
     ) -> None:
         """Plots the density of eigenvalues of ¹⁄ₙYYᵀ and compares to the Marchenko-Pastur distribution
@@ -243,6 +313,11 @@ class DysonEqualizer:
         show_only_significant: int, optional
             Set this value to show only a small number of significant eigenvalues (defaults to None)
             This option is useful is some of the signal eigenvalues are much bigger than the noise.
+            Set to zero to show only significant eigenvalues within the margin indicated by
+            `show_only_significant_right_margin`
+        show_only_significant_right_margin: float, optional
+            Specifies the size of the right margin (defaults to 0.3) from the largest eigenvalue
+            selected by the show_only_significant option
         ax: plt.Axes, optional
             A matplotlib Axes object. If none is provided, a new figure is created.
 
@@ -256,6 +331,7 @@ class DysonEqualizer:
         plot_mp_density(
             eigs, gamma=m/n,
             show_only_significant=show_only_significant,
+            show_only_significant_right_margin=show_only_significant_right_margin,
             matrix_label='¹⁄ₙYYᵀ',
             ax=ax,
         )
@@ -263,6 +339,7 @@ class DysonEqualizer:
     def plot_mp_density_Y_hat(
             self,
             show_only_significant: int = None,
+            show_only_significant_right_margin: float = 0.3,
             ax: plt.Axes | None = None,
     ) -> None:
         """Plots the density of eigenvalues of ¹⁄ₙŶŶᵀ and compares to the Marchenko-Pastur distribution
@@ -275,6 +352,14 @@ class DysonEqualizer:
         show_only_significant: int, optional
             Set this value to show only a small number of significant eigenvalues (defaults to None)
             This option is useful is some of the signal eigenvalues are much bigger than the noise.
+        show_only_significant: int, optional
+            Set this value to show only a small number of significant eigenvalues (defaults to None)
+            This option is useful is some of the signal eigenvalues are much bigger than the noise.
+            Set to zero to show only significant eigenvalues within the margin indicated by
+            `show_only_significant_right_margin`
+        show_only_significant_right_margin: float, optional
+            Specifies the size of the right margin (defaults to 0.3) from the largest eigenvalue
+            selected by the show_only_significant option
         ax: plt.Axes, optional
             A matplotlib Axes object. If none is provided, a new figure is created.
 
@@ -288,6 +373,41 @@ class DysonEqualizer:
         plot_mp_density(
             eigs, gamma=m/n,
             show_only_significant=show_only_significant,
+            show_only_significant_right_margin=show_only_significant_right_margin,
             matrix_label='¹⁄ₙŶŶᵀ',
             ax=ax,
         )
+
+    def ks_pvalue_Y_hat(
+            self
+    ) -> float:
+        """ Computes the p-value of the Kolmogorov–Smirnov test between the density of eigenvalues of ¹⁄ₙŶŶᵀ
+            and the Marchenko-Pastur distribution
+
+        Returns
+        -------
+        p-value : DysonEqualizer
+            The p-value of the Kolmogorov–Smirnov test
+
+        """
+        m, n = sorted(self.Y_hat.shape)
+        eigs = self.S_hat ** 2 / n
+        ksr = ks_1samp(eigs, cdf=marchenko_pastur_cdf, args=[m/n])
+        return ksr.pvalue
+
+    def ks_pvalue_Y(
+            self
+    ) -> float:
+        """ Computes the p-value of the Kolmogorov–Smirnov test between the density of eigenvalues of ¹⁄ₙYYᵀ
+            and the Marchenko-Pastur distribution
+
+        Returns
+        -------
+        p-value : DysonEqualizer
+            The p-value of the Kolmogorov–Smirnov test
+
+        """
+        m, n = sorted(self.Y.shape)
+        eigs = self.S ** 2 / n
+        ksr = ks_1samp(eigs, cdf=marchenko_pastur_cdf, args=[m/n])
+        return ksr.pvalue

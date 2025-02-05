@@ -82,6 +82,7 @@ def plot_mp_density(
         eigs: np.ndarray,
         gamma: float,
         show_only_significant: int = None,
+        show_only_significant_right_margin: float = 0.3,
         matrix_label: str = 'X',
         bins: int | str | Sequence = 'sqrt',
         ax: plt.Axes | None = None,
@@ -100,6 +101,11 @@ def plot_mp_density(
     show_only_significant: int, optional
         Set this value to show only a small number of significant eigenvalues (defaults to None)
         This option is useful is some of the signal eigenvalues are much bigger than the noise.
+        Set to zero to show only significant eigenvalues within the margin indicated by
+        `show_only_significant_right_margin`
+    show_only_significant_right_margin: float, optional
+        Specifies the size of the right margin (defaults to 0.3) from the largest eigenvalue
+        selected by the show_only_significant option
     matrix_label: str, optional
         The name of the matrix that will be used as label (defaults to ``X``)
     bins: int or sequence or str, default: 'sqrt'
@@ -135,6 +141,10 @@ def plot_mp_density(
         plot_mp_density(eigs, gamma=m/n)
 
     """
+    if show_only_significant_right_margin is not None:
+        if show_only_significant_right_margin < 0 or show_only_significant_right_margin > 1:
+            raise ValueError('show_only_significant_right_margin should be between 0 and 1')
+
     if ax is None:
         _, ax = plt.subplots()
 
@@ -144,15 +154,19 @@ def plot_mp_density(
     beta_p = (1 + gamma ** 0.5) ** 2
     rank = np.sum(eigs > beta_p)
 
-    if show_only_significant is not None:
-        eigs = eigs[rank - show_only_significant:]
+    eig_max_idx = max(0, rank - show_only_significant) if show_only_significant is not None else 0
+    xmax = None
+    if eig_max_idx > 0 and (xclip := eigs[eig_max_idx] * (1+ show_only_significant_right_margin)) < eigs[0] * 1.05:
+        xmax = xclip
 
-    ax.hist(eigs, bins=bins, density=True, label=f'Eigenvalues of {matrix_label}')
-    x = np.linspace(start=0, stop=eigs[0] * 1.05, num=1000)
+    ax.hist(eigs, bins=bins, density=True, range=(0, xmax) if xmax else None, label=f'Eigenvalues of {matrix_label}')
+    x = np.linspace(start=0, stop=xmax or eigs[0], num=1000)
     mp = marchenko_pastur(x, gamma)
     ax.plot(x, mp, color='red', label='MP density')
+
+    ax.set_xlim(0, xmax)
     ax.axvline(beta_p, linestyle='--', color='green', label='MP upper edge β₊')
 
-    ax.text(0.60, 0.94, f'KS p-val = {ksr.pvalue:.5f}', transform=ax.transAxes)
+    ax.text(0.60, 0.89, f'Rank = {rank}\nKS p-val = {ksr.pvalue:.5f}', transform=ax.transAxes)
 
-    ax.legend(bbox_to_anchor=(0.95, 0.90), loc='upper right', borderaxespad=0.)
+    ax.legend(bbox_to_anchor=(0.98, 0.87), loc='upper right', borderaxespad=0.)
