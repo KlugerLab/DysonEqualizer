@@ -255,8 +255,8 @@ def marchenko_pastur_cdf(
     i = (x > a) & (x < b)
     xi = x[i]
 
-    r[i] = (np.sqrt((xi - a) * (b - xi)) + (a + b) / 2 * np.asin((2 * xi - a - b) / (b - a)) -
-            (np.sqrt(a * b)) * np.asin(((a + b) * xi - 2 * a * b) / (xi * (b - a)))) / (
+    r[i] = (np.sqrt((xi - a) * (b - xi)) + (a + b) / 2 * np.arcsin((2 * xi - a - b) / (b - a)) -
+            (np.sqrt(a * b)) * np.arcsin(((a + b) * xi - 2 * a * b) / (xi * (b - a)))) / (
                        2 * np.pi * gamma * sigma ** 2) + .5
 
     return r
